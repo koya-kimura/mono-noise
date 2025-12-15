@@ -13,14 +13,16 @@ uniform sampler2D ui_tex;
 #include "./utils/color.frag"
 
 void main(void) {
-    vec2 uv = vTexCoord;
+    vec2 iuv = vTexCoord;
 
-    uv.y += random(uv) * 0.1 - 0.05;
+    iuv += random(iuv) * 0.1 - 0.05;
+
+    vec2 uv = iuv;
 
     uv -= vec2(0.5);
     uv *= 2.0;
     uv = xy2pol(uv);
-    // uv.x += uv.y * PI * 2.0 + u_time * 0.1;
+    uv.x += uv.y * PI * 2.0 + u_time * 0.1;
     uv = pol2xy(uv);
     uv += vec2(0.5);
 
@@ -35,7 +37,13 @@ void main(void) {
 
     col = rgbShift(u_tex, uv, 0.05);
 
-    vec4 uiCol = texture2D(ui_tex, vTexCoord);
+    if(abs(iuv.x - 0.5) < 0.2){
+        col.rgb = invert(col.rgb);
+    }
+
+    vec2 uuv = vTexCoord;
+    uuv += random(uuv) * 0.0006 - 0.0003;
+    vec4 uiCol = texture2D(ui_tex, uuv);
     col = mix(col, uiCol, uiCol.a);
 
     gl_FragColor = col;

@@ -217,18 +217,29 @@ export const uiText: UIDrawFunction = (
 ): void => {
   const { p, tex, midiManager, audioManager, captureManager, beat, font } = context;
 
-  for (let i = 0; i < 100; i++) {
-    const x = UniformRandom.rand(i) * tex.width;
-    const y = (beat * 40 + UniformRandom.rand(i, 4572) * tex.height * 1.6) % (tex.height * 1.6) - tex.height * 0.3;
-    const s = map(UniformRandom.rand(i, 4170), 0, 1, 0.05, 0.2) * Math.min(tex.width, tex.height) * 0.2;
+  for (let j of [0.02, 0.98]) {
+    for (let i = 0; i < 7; i++) {
+      const str = [..."irisout"][i % 7];
+      const isMove = UniformRandom.rand(Math.floor(beat), i) < 0.4;
+      const x = map(i, 0, 6, 0.1, 0.9) * tex.width;
+      const y = tex.height * j;
+      const s = 0.15 * tex.width;
+      const angle = 0;
+      const w = isMove ? map(UniformRandom.rand(Math.floor(beat * 8.0), i * 89502), 0, 1, 0.2, 2.0) : 1;
+      const h = isMove ? map(UniformRandom.rand(Math.floor(beat * 8.0), i * 57209), 0, 1, 0.2, 2.0) : 1;
 
-    tex.fill(255);
-    tex.textSize(100);
-    tex.textAlign(p.CENTER, p.CENTER);
-    if (font) {
-      tex.textFont(font);
+      tex.push();
+      tex.fill(255);
+      tex.textSize(s);
+      tex.textAlign(p.CENTER, p.CENTER);
+      if (font) {
+        tex.textFont(font);
+      }
+      tex.translate(x, y);
+      tex.scale(w, h);
+      tex.rotate(angle);
+      tex.text(str, 0, 0);
+      tex.pop();
     }
-    tex.text("C", x, y);
-
   }
 }
