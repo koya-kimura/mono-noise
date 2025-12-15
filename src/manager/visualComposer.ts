@@ -1,9 +1,9 @@
 import p5 from "p5";
-import type { APCMiniMK2Manager } from "../midi/apcmini_mk2/apcMiniMk2Manager"; // MIDIコントローラー管理クラス
-import type { AudioMicManager } from "../utils/audio/audioMicManager"; // オーディオ入力管理クラス
-import type { CaptureManager } from "../utils/capture/captureManager"; // カメラキャプチャ管理クラス
+import type { APCMiniMK2Manager } from "../midi/apcmini_mk2/APCMiniMK2Manager";
+import type { AudioMicManager } from "../utils/audio/audioMicManager";
+import type { CaptureManager } from "../utils/capture/captureManager";
 
-import { sampleScene } from "../visuals/sampleScene";
+import { MultLine } from "../visuals/multLine";
 
 /**
  * VisualComposer はレンダーターゲットとアクティブなビジュアル1つを管理する。
@@ -11,11 +11,11 @@ import { sampleScene } from "../visuals/sampleScene";
 export class VisualComposer {
   private renderTexture: p5.Graphics | undefined; // ビジュアル描画用のオフスクリーンキャンバス
 
-  private sampleScene: sampleScene;
+  private multLine: MultLine;
 
   constructor() {
     this.renderTexture = undefined;
-    this.sampleScene = new sampleScene();
+    this.multLine = new MultLine();
   }
 
   /**
@@ -104,7 +104,7 @@ export class VisualComposer {
     // サンプル描画（赤い円）
     tex.push();
     tex.background(0);
-    this.sampleScene.draw(ctx);
+    this.multLine.draw(ctx);
     tex.pop();
   }
 

@@ -35,7 +35,15 @@ float posterize(float value, float levels) {
     return floor(value * levels) / levels;
 }
 
+float map(float value, float min, float max, float min2, float max2) {
+    return (value - min) * (max2 - min2) / (max - min) + min2;
+}
+
 // 閾値を適用する（2値化）
 float threshold(float value, float thresh) {
     return value > thresh ? 1.0 : 0.0;
+}
+
+float zigzag(float value) {
+    return abs(mod(value, 2.0) - 1.0);
 }

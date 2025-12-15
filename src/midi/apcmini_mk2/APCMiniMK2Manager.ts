@@ -1,5 +1,5 @@
 import { MIDIManager } from "../midiManager";
-import { UniformRandom } from "../../utils/math/uniformRandom";
+import { UniformRandom } from "../../utils/math/UniformRandom";
 import type { ButtonConfig, FaderButtonMode, InputType, MidiInputValue } from "../../types";
 import {
   MIDI_BUTTON_CONFIGS,
@@ -113,7 +113,7 @@ export class APCMiniMK2Manager extends MIDIManager {
         const existing = this.cellRegistry.get(cellKey)!;
         throw new Error(
           `セル (page=${page}, row=${cell.row}, col=${cell.col}) は既に "${existing.key}" に登録されています。` +
-            `"${key}" を登録できません。`,
+          `"${key}" を登録できません。`,
         );
       }
     }

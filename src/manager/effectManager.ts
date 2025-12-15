@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { APCMiniMK2Manager } from "../midi/apcmini_mk2/apcMiniMk2Manager"; // MIDIコントローラー管理クラス
+import { APCMiniMK2Manager } from "../midi/apcmini_mk2/APCMiniMK2Manager";
 
 /**
  * EffectManager はポストエフェクト用のシェーダーを読み込み、描画パイプラインへ適用する。

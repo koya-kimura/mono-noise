@@ -1,4 +1,6 @@
 import type { VisualRenderContext } from "../types/render";
+import { UniformRandom } from "../utils/math/UniformRandom";
+import { map } from "../utils/math/mathUtils";
 
 export type UIDrawFunction = (context: VisualRenderContext) => void;
 
@@ -209,3 +211,24 @@ export const uiDebug: UIDrawFunction = (
   }
   tex.pop();
 };
+
+export const uiText: UIDrawFunction = (
+  context: VisualRenderContext,
+): void => {
+  const { p, tex, midiManager, audioManager, captureManager, beat, font } = context;
+
+  for (let i = 0; i < 100; i++) {
+    const x = UniformRandom.rand(i) * tex.width;
+    const y = (beat * 40 + UniformRandom.rand(i, 4572) * tex.height * 1.6) % (tex.height * 1.6) - tex.height * 0.3;
+    const s = map(UniformRandom.rand(i, 4170), 0, 1, 0.05, 0.2) * Math.min(tex.width, tex.height) * 0.2;
+
+    tex.fill(255);
+    tex.textSize(100);
+    tex.textAlign(p.CENTER, p.CENTER);
+    if (font) {
+      tex.textFont(font);
+    }
+    tex.text("C", x, y);
+
+  }
+}
