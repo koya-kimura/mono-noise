@@ -144,4 +144,184 @@ MIDI 接続なしで使用する場合の初期値を設定します。
 ## 使用例
 
 実際の設定例は `config.ts` を参照してください。必要に応じてボタンを追加・削除し、プロジェクトに合わせてカスタマイズしてください。
+
+## ボタンの値の取得と使用方法
+
+`config.ts` で設定したボタンの値は、`midiManager.midiInput` オブジェクトから取得できます。
+
+### 基本的な使い方
+
+ビジュアルやエフェクト処理の中で、`midiManager` を通じてボタンの値にアクセスします：
+
+```typescript
+// VisualRenderContext から midiManager を取得
+const { midiManager } = ctx;
+
+// midiInput からボタンの値を取得
+const buttonValue = midiManager.midiInput["buttonKey"];
+```
+
+### タイプ別の取得方法
+
+#### radio タイプ
+
+radio タイプのボタンは**数値**（選択されているインデックス）を返します。
+
+```typescript
+const sceneIndex = midiManager.midiInput["sceneSelect"]; // 0, 1, 2, ...
+```
+
+**使用例**：
+```typescript
+// config.ts で設定
+{
+  key: "circleSize",
+  type: "radio",
+  cells: [
+    { page: 0, row: 0, col: 0 },
+    { page: 0, row: 0, col: 1 },
+  ],
+  defaultValue: 0,
+}
+
+// multLine.ts などで使用
+const sizeIndex = midiManager.midiInput["circleSize"] as number;
+const scl = sizeIndex === 0 ? 1.0 : 2.0; // インデックスに応じて値を変更
+```
+
+#### toggle タイプ
+
+toggle タイプのボタンは**真偽値**（ON/OFF）を返します。
+
+```typescript
+const isEffectEnabled = midiManager.midiInput["effectEnabled"]; // true or false
+```
+
+**使用例**：
+```typescript
+// config.ts で設定
+{
+  key: "invertColor",
+  type: "toggle",
+  cells: [{ page: 0, row: 0, col: 1 }],
+  defaultValue: false,
+}
+
+// シェーダーやビジュアルで使用
+if (midiManager.midiInput["invertColor"]) {
+  // エフェクトを適用
+  col.rgb = invert(col.rgb);
+}
+```
+
+#### momentary タイプ
+
+momentary タイプは押している間だけ `true` を返します。
+
+```typescript
+const isFlashPressed = midiManager.midiInput["flash"]; // 押している間 true
+```
+
+#### oneshot タイプ
+
+oneshot タイプは押された瞬間だけ `true` になり、次のフレームで自動的に `false` に戻ります。
+
+```typescript
+const isTrigger = midiManager.midiInput["trigger"]; // トリガーされた瞬間だけ true
+```
+
+### フェーダーの値の取得
+
+フェーダーの値は `faderValues` 配列から取得します（0.0～1.0 の範囲）：
+
+```typescript
+const fader0 = midiManager.faderValues[0]; // 1番目のフェーダー
+const fader8 = midiManager.faderValues[8]; // マスターフェーダー
+```
+
+**使用例**：
+```typescript
+// フェーダーで透明度を制御
+const alpha = midiManager.faderValues[0] * 255;
+tex.fill(255, alpha);
+```
+
+### シェーダーでの使用
+
+シェーダーでフェーダーやボタンの値を使用する場合は、uniform として渡す必要があります。
+
+#### effectManager.ts で uniform を設定
+
+```typescript
+this.shader.setUniform("u_faderValues", midiManager.faderValues);
+```
+
+#### post.frag で使用
+
+```glsl
+uniform float u_faderValues[9];
+
+// midi.frag から値を取得
+float faderValue = getFaderValue(0); // 1番目のフェーダー
+
+// エフェクトに適用
+col.rgb *= faderValue;
+```
+
+### 実践例
+
+#### 例 1: ビジュアルの切り替え
+
+```typescript
+// config.ts
+{
+  key: "visualSelect",
+  type: "radio",
+  cells: [
+    { page: 0, row: 0, col: 0 },
+    { page: 0, row: 0, col: 1 },
+    { page: 0, row: 0, col: 2 },
+  ],
+  defaultValue: 0,
+}
+
+// visualComposer.ts
+const visualIndex = midiManager.midiInput["visualSelect"] as number;
+switch (visualIndex) {
+  case 0:
+    this.multLine.draw(ctx);
+    break;
+  case 1:
+    this.otherVisual.draw(ctx);
+    break;
+  case 2:
+    this.anotherVisual.draw(ctx);
+    break;
+}
+```
+
+#### 例 2: エフェクトのON/OFF
+
+```typescript
+// config.ts
+{
+  key: "kaleidoscope",
+  type: "toggle",
+  cells: [{ page: 0, row: 1, col: 0 }],
+  defaultValue: false,
+}
+
+// post.frag（GLSLとしてではなくTypeScriptで制御する場合）
+if (midiManager.midiInput["kaleidoscope"]) {
+  uv = kaleidoscope(uv, 8.0, u_resolution);
+}
+```
+
+#### 例 3: パラメータの調整
+
+```typescript
+// フェーダーで線の本数を制御
+const lineCount = Math.floor(midiManager.faderValues[0] * 20); // 0-20本
+const n = map(UniformRandom.rand(Math.floor(beat)), 0, 1, 1, lineCount);
+```
 ```

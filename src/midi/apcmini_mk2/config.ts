@@ -14,6 +14,48 @@ import { LED_PALETTE } from "./ledPalette";
  * 必要に応じてページ・行・列を指定してボタンを登録してください。
  */
 export const MIDI_BUTTON_CONFIGS: ButtonConfig[] = [
+  {
+    key: "circleSize",
+    type: "radio",
+    cells: [
+      { page: 0, row: 0, col: 0 },
+      { page: 0, row: 0, col: 1 },
+      // ...
+    ],
+    activeColor: LED_PALETTE.RED,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: 0,
+  },
+  {
+    key: "doubleSpeed",
+    type: "toggle",
+    cells: [{ page: 0, row: 7, col: 6 }],
+    activeColor: LED_PALETTE.GREEN,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: false,
+  },
+  {
+    key: "quadSpeed",
+    type: "momentary",
+    cells: [{ page: 0, row: 7, col: 7 }],
+    activeColor: LED_PALETTE.CYAN,
+    inactiveColor: LED_PALETTE.DIM,
+  },
+  {
+    key: "red",
+    type: "momentary",
+    cells: [{ page: 0, row: 7, col: 0 }],
+    activeColor: LED_PALETTE.RED,
+    inactiveColor: LED_PALETTE.DIM,
+  },
+  {
+    key: "redToggle",
+    type: "toggle",
+    cells: [{ page: 0, row: 7, col: 1 }],
+    activeColor: LED_PALETTE.RED,
+    inactiveColor: LED_PALETTE.DIM,
+    defaultValue: false,
+  }
 ];
 
 // ========================================

@@ -55,3 +55,31 @@ vec4 rgbShift(sampler2D tex, vec2 uv, float amount) {
     
     return vec4(r, g, b, 1.0);
 }
+
+// ラジエーションブラー（放射状ブラー）
+// center: ブラーの中心点（通常は vec2(0.5, 0.5)）
+// strength: ブラーの強さ（例: 0.02）
+// samples: サンプリング回数（1-16の範囲）
+vec4 radialBlur(sampler2D tex, vec2 uv, vec2 center, float strength, int samples) {
+    vec4 color = vec4(0.0);
+    
+    // 中心からの方向ベクトル
+    vec2 dir = uv - center;
+    
+    // サンプリングのステップ幅
+    vec2 step = dir * strength / float(samples);
+    
+    // 最大16回サンプリング（GLSLのループ制約に対応）
+    int count = 0;
+    for (int i = 0; i < 16; i++) {
+        if (i >= samples) break;
+        vec2 sampleUV = uv - step * float(i);
+        color += texture2D(tex, sampleUV);
+        count++;
+    }
+    
+    // 平均化
+    color /= float(count);
+    
+    return color;
+}
